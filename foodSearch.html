@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./styles/style.css">
+        <title>
+        </title>
+    </head>
+    <body>
+        
+        <div id="header"></div>
+        <div id="searchFood">
+            <input type="text" placeholder="Search" id="query">
+        </div>
+
+        <div class="cont" id="cont">
+
+        </div>
+    </body>
+</html>
+
+<script type="module">
+    var timerId;
+    import myNavbar from './components/navbar.js';
+    import { getData, showMeals } from './scripts/showData.js';
+    var divHead = document.getElementById("header");
+    divHead.innerHTML = myNavbar();
+    let searchIn = document.getElementById("query");
+    searchIn.addEventListener("input",function () {
+        throttleFn();
+    })
+
+
+    function throttleFn() {
+
+        if (timerId) {                     //Why?? undefined timer id is false Hence 1st time it will go down;
+            return false;
+        }
+
+        timerId = setTimeout(() => {      //settimeout to delay request//After the first timerId is given a number, it will not come here due to the above if
+            search();
+            timerId = undefined;         //Why??//Because Only one timeout remains. After it is excuted we make the timerId undefined for the next search.
+        }, 1000);
+
+        // console.log("time", timerId);
+        //main();
+    }
+
+    function search() {
+        var parent = document.getElementById("cont");
+        var search = document.getElementById("query").value;
+        if(search.length==0){
+            parent.innerHTML=null;
+            return;
+        }
+        let response = getData(`https://www.themealdb.com/api/json/v1/1/search.php?s=${search}`)
+        response.then(({ meals }) => {
+            parent.innerHTML = null;
+            showMeals(meals, parent);
+        });
+    }
+</script>
